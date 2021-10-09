@@ -1,16 +1,23 @@
+import 'reflect-metadata';
 
 import {Server, Socket} from 'socket.io';
 import * as http from 'http';
+import { GameService } from './modules/game';
+import Container, { Service } from 'typedi';
 
+@Service()
 export class Main{
 
     private httpServer ?: http.Server;
     private io ?: Server;
 
     private PORT = 3000;
-    constructor(){
-       this.attachSocketIo();
-       this.listen();
+    constructor(private gameService : GameService){}
+
+    start(){
+        this.attachSocketIo();
+        this.listen();
+        this.gameService.instanceExists();
     }
 
     private attachSocketIo(){
@@ -29,11 +36,14 @@ export class Main{
         this.io!.on('connection', function (socket : Socket){
             console.log("Player conectou");
             console.log(socket)
-            socket.on("event", data => {
+            socket.on("event", (data) => {
+                console.log(socket.id);
                 console.log(data);
             })
         })
     }
 }
 
-export default new Main();
+const serviceInstance = Container.get(Main);
+
+serviceInstance.start();
