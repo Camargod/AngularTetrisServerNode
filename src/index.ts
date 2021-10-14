@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import {Server, Socket} from 'socket.io';
 import * as http from 'http';
-import { GameService } from './modules/game';
+import { GameService } from './modules/game-service';
 import Container, { Service } from 'typedi';
 
 @Service()
@@ -14,10 +14,10 @@ export class Main{
     private PORT = 3000;
     constructor(private gameService : GameService){}
 
-    start(){
+    async start(){
         this.attachSocketIo();
-        this.listen();
-        this.gameService.instanceExists();
+        this.gameService.setSocketIo(this.io!)
+        this.gameService.gameStart();
     }
 
     private attachSocketIo(){
@@ -31,19 +31,14 @@ export class Main{
             }
         });
     }
-
-    private listen(){
-        this.io!.on('connection', function (socket : Socket){
-            console.log("Player conectou");
-            console.log(socket)
-            socket.on("event", (data) => {
-                console.log(socket.id);
-                console.log(data);
-            })
-        })
-    }
 }
 
 const serviceInstance = Container.get(Main);
 
-serviceInstance.start();
+let main = async () => {
+    await serviceInstance.start();
+} 
+
+main().then(()=>{
+    console.log("Jogo finalizado")
+});
