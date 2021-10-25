@@ -1,6 +1,7 @@
 import { Observable } from "rxjs/internal/Observable";
 import { AnonymousSubject } from "rxjs/internal/Subject";
 import { Service } from "typedi";
+import { ServerConsts } from "../const/server-const";
 import { SocketEventServerEnumerator } from "../enums/socket-event.enum";
 import { SocketEventHandlingMappingService } from "../mapping/socket-handler-events";
 import { UsersService } from "./users-service";
@@ -8,7 +9,7 @@ import { UsersService } from "./users-service";
 @Service()
 export class TimerService {
     timerInterval ?: NodeJS.Timer;
-    timer = 300;
+    timer = ServerConsts.LOBBY_TIMER;
     isEnabled : AnonymousSubject<boolean> = new AnonymousSubject();
 
     constructor(

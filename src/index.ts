@@ -4,6 +4,8 @@ import {Server, Socket} from 'socket.io';
 import * as http from 'http';
 import { GameService } from './modules/game-service';
 import Container, { Service } from 'typedi';
+import { createAdapter } from '@socket.io/redis-adapter';
+const { createClient } = require("redis");
 
 @Service()
 export class Main{
@@ -17,19 +19,24 @@ export class Main{
     async start(){
         this.attachSocketIo();
         this.gameService.setSocketIo(this.io!)
-        this.gameService.gameStart();
+        await this.gameService.gameStart();
     }
 
     private attachSocketIo(){
         this.httpServer = http.createServer();
+        const pubClient = createClient({ host: "localhost", port: 6379 });
+        const subClient = pubClient.duplicate();
+        
         this.httpServer.listen(this.PORT);
-
+ 
         this.io = new Server(this.httpServer, {
             cors: {
               origin: "*",
               methods: ["GET", "POST"]
             }
         });
+        this.io.adapter(createAdapter(pubClient, subClient));
+
     }
 }
 

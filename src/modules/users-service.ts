@@ -1,11 +1,17 @@
 import { Socket } from "socket.io";
-import { Service } from "typedi";
-import { TetrisGrid } from "../entity/tetris-grid";
+import Container, { Service } from "typedi";
+import { TetrisGridPiece } from "../entity/tetris-grid";
 import { User } from "../entity/user";
+import { SocketEventServerEnumerator } from "../enums/socket-event.enum";
+import { SocketEventHandlingMappingService } from "../mapping/socket-handler-events";
 
 @Service()
 export class UsersService{
     private users : Array<User> = [];
+
+    constructor(        
+        private socketHandler : SocketEventHandlingMappingService
+    ) {}
 
     addUser(userId : string,socket : Socket){
         let user = this.users.find(user => user.socketId == socket.id);
@@ -17,7 +23,7 @@ export class UsersService{
         }
     }
 
-    setUserGameGrid(grid : Array<TetrisGrid>, socket : Socket){
+    setUserGameGrid(grid : Array<TetrisGridPiece>, socket : Socket){
         const user = this.users.find((user)=>{
             return user.socketId == socket.id
         });
@@ -25,6 +31,7 @@ export class UsersService{
             console.warn("Unauthenticated player")
         } else{
             user!.playerGrid = grid;
+            Container.get(SocketEventHandlingMappingService).emitMessage(`${SocketEventServerEnumerator.CHALLENGER_GRID}`,user);
         }
     }
     
