@@ -14,12 +14,14 @@ export class UsersService{
     ) {}
 
     addUser(userId : string,socket : Socket){
-        let user = this.users.find(user => user.socketId == socket.id);
+        let user = this.users.find(user => user.userId == userId);
         if(user){
             user.socketId = socket.id;
         }
         else{
             this.users.push(new User(userId,socket.id));
+            //this.setUserGameGrid(new Array<TetrisGridPiece>(),socket);
+            this.returnAllGrids(socket)
         }
     }
 
@@ -31,8 +33,13 @@ export class UsersService{
             console.warn("Unauthenticated player")
         } else{
             user!.playerGrid = grid;
-            Container.get(SocketEventHandlingMappingService).emitMessage(`${SocketEventServerEnumerator.CHALLENGER_GRID}`,user);
+            Container.get(SocketEventHandlingMappingService).emitMessage(`${SocketEventServerEnumerator.CHALLENGER_GRID_UPDATE}`,user);
         }
+    }
+
+    returnAllGrids(socket: Socket){
+        Container.get(SocketEventHandlingMappingService).emitMessage(`${SocketEventServerEnumerator.ALL_CHALLENGER_GRID}`,this.users);
+
     }
     
     getPlayersNumber(){

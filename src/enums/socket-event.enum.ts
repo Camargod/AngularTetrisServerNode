@@ -1,9 +1,10 @@
 export enum SocketEventServerEnumerator{
     "TIME_UPDATE" = 201,
     "GAME_START" = 202,
-    "CHALLENGER_GRID" = 203,
-    "RECEIVED_DAMAGE" = 204,
-    "IN_MATCH_PLAYERS" = 205,
+    "CHALLENGER_GRID_UPDATE" = 203,
+    "ALL_CHALLENGER_GRID" = 204,
+    "RECEIVED_DAMAGE" = 205,
+    "IN_MATCH_PLAYERS" = 206,
     "DISCONNECTED_BY_SERVER" = 299  
 }
 
