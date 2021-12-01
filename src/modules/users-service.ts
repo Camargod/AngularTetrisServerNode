@@ -21,7 +21,7 @@ export class UsersService{
         else{
             this.users.push(new User(userId,socket.id));
             //this.setUserGameGrid(new Array<TetrisGridPiece>(),socket);
-            this.returnAllGrids(socket)
+            this.returnAllGrids();
         }
     }
 
@@ -37,9 +37,8 @@ export class UsersService{
         }
     }
 
-    returnAllGrids(socket: Socket){
+    returnAllGrids(){
         Container.get(SocketEventHandlingMappingService).emitMessage(`${SocketEventServerEnumerator.ALL_CHALLENGER_GRID}`,this.users);
-
     }
     
     getPlayersNumber(){
