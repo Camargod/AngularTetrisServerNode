@@ -27,7 +27,7 @@ export class Main{
 
     private attachSocketIo(){
         this.httpServer = http.createServer();
-        this.httpServer.listen(this.PORT);
+        this.httpServer.listen(process.env.PORT || this.PORT);
  
 
         this.io = new Server(this.httpServer, {
