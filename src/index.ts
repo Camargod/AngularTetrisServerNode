@@ -7,6 +7,7 @@ import Container, { Service } from 'typedi';
 import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient, RedisClient }  from "redis";
 import { Observable } from 'rxjs';
+import { RedisService } from './services/redis-service';
 
 @Service()
 export class Main{
@@ -17,7 +18,7 @@ export class Main{
     private subClient ?: RedisClient;
 
     private PORT = 3000;
-    constructor(private gameService : GameService){}
+    constructor(private gameService : GameService, private redisService : RedisService){}
 
     async start(){
         this.attachSocketIo();
@@ -37,14 +38,15 @@ export class Main{
             }
         });
 
-        // try{
-        //     this.pubClient = createClient({ host: "localhost", port: 6379 });
-        //     this.subClient = this.pubClient.duplicate();
-        // }catch(err){
-        //     console.error("Redis não disponivel");
-        // }finally{
-        //     this.io.adapter(createAdapter(this.pubClient, this.subClient));
-        // }
+        try{
+            this.pubClient = createClient({ host: "localhost", port: 6379 });
+            this.subClient = this.pubClient.duplicate();
+            this.redisService.setRedisClient(this.pubClient);
+        }catch(err){
+            console.error("Redis não disponivel");
+        }finally{
+            this.io.adapter(createAdapter(this.pubClient, this.subClient));
+        }
     }
 }
 

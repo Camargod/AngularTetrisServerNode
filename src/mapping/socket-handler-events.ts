@@ -38,7 +38,6 @@ export class SocketEventHandlingMappingService{
     void(...args : any[]){}
 
     handleGridChanges(...args : any[]){
-        // console.log(args[0]);
         args[2].userService.setUserGameGrid(args[0],args[1]);
     }
 
