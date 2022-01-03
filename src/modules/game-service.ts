@@ -20,6 +20,7 @@ export class GameService {
 
     async gameStart(){
         this.socketEvents.setSocketListening();
+        this.socketEvents.validateClientConnection();
         await lastValueFrom(this.timerService.start());
     }
 }

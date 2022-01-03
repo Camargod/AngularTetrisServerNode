@@ -1,22 +1,27 @@
 import { Server, Socket } from "socket.io";
 import { Service } from "typedi";
-import { SocketEventClientEnumerator } from "../enums/socket-event.enum";
+import { SocketEventClientEnumerator, SocketEventServerEnumerator } from "../enums/socket-event.enum";
 import { UsersService } from "../modules/users-service";
 
 @Service()
 export class SocketEventHandlingMappingService{
 
     private socketIoServer !: Server;
-    private methodMapping : Map<String,Function> = new Map();
-    private methodListing = [this.handleGridChanges,this.void,this.void,this.userStartSession]
+    private clientMethodMapping : Map<String,Function> = new Map();
+    private clientMethodListing = [this.handleGridChanges,this.void,this.void,this.userStartSession]
     constructor(
         private userService : UsersService
     ){}
 
-
-
     emitMessage(event:string,message : any){
         this.socketIoServer.emit(event,message)
+        console.log(`Mensagem com id: ${event} valor: ${message}`);
+    }
+    /*
+        Emits a message to a single socket;
+    */
+    emitMessageToSocket(event:string | SocketEventServerEnumerator ,message : any, socket : Socket){
+        socket.emit(`${event}`,message);
         console.log(`Mensagem com id: ${event} valor: ${message}`);
     }
 
@@ -53,10 +58,10 @@ export class SocketEventHandlingMappingService{
             let i = 0;
             for(const eIt in e){
                 if(classInstance.validateString(eIt)){
-                    classInstance.methodMapping.set(eIt,classInstance.methodListing[i]);
+                    classInstance.clientMethodMapping.set(eIt,classInstance.clientMethodListing[i]);
                     console.log(`Evento de id ${eIt} mapeado`);
                     socket.on(eIt,(value)=>{
-                        classInstance.methodMapping.get(eIt)!(value,socket,classInstance);
+                        classInstance.clientMethodMapping.get(eIt)!(value,socket,classInstance);
                     })
                     i++;
                 }
@@ -64,5 +69,10 @@ export class SocketEventHandlingMappingService{
         })
     }
 
+    validateClientConnection(){
+        this.socketIoServer.on("connection", (socket)=>{
+            this.emitMessageToSocket(SocketEventServerEnumerator.CONNECTION_READY,"",socket);
+        })
+    }
 }
 

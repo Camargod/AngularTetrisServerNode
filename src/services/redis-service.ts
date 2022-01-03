@@ -1,5 +1,5 @@
 import { RedisClient } from "redis";
-import { Service } from "typedi/types/decorators/service.decorator";
+import { Service } from "typedi";
 
 @Service()
 export class RedisService{

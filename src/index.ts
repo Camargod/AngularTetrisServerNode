@@ -38,15 +38,15 @@ export class Main{
             }
         });
 
-        try{
-            this.pubClient = createClient({ host: "localhost", port: 6379 });
-            this.subClient = this.pubClient.duplicate();
-            this.redisService.setRedisClient(this.pubClient);
-        }catch(err){
-            console.error("Redis não disponivel");
-        }finally{
-            this.io.adapter(createAdapter(this.pubClient, this.subClient));
-        }
+        // try{
+        //     this.pubClient = createClient({ host: "localhost", port: 6379 });
+        //     this.subClient = this.pubClient.duplicate();
+        //     this.redisService.setRedisClient(this.pubClient);
+        // }catch(err){
+        //     console.error("Redis não disponivel");
+        // }finally{
+        //     this.io.adapter(createAdapter(this.pubClient, this.subClient));
+        // }
     }
 }
 

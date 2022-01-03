@@ -1,4 +1,5 @@
 export enum SocketEventServerEnumerator{
+    "CONNECTION_READY" = 200,
     "TIME_UPDATE" = 201,
     "GAME_START" = 202,
     "CHALLENGER_GRID_UPDATE" = 203,
