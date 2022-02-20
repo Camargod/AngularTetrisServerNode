@@ -2,6 +2,7 @@ import { BehaviorSubject, lastValueFrom } from "rxjs";
 import { Server } from "socket.io";
 import { Service } from "typedi";
 import { SocketEventHandlingMappingService } from "../mapping/socket-handler-events";
+import { MatchService } from "./match-service";
 import { TimerService } from "./timer-service";
 
 @Service()
@@ -11,7 +12,8 @@ export class GameService {
 
     constructor(
         private socketEvents : SocketEventHandlingMappingService,
-        private timerService : TimerService
+        private timerService : TimerService,
+        private matchService : MatchService
     ){}
 
     setSocketIo(socketIo : Server){
@@ -19,8 +21,12 @@ export class GameService {
     }
 
     async gameStart(){
+        console.log("----- SERVIDOR INICIADO -------")
         this.socketEvents.setSocketListening();
         this.socketEvents.validateClientConnection();
+        console.log("----- ROTINA DE TIMER INICIADA -------");
         await lastValueFrom(this.timerService.start());
+        console.log("----- ROTINA DE PARTIDA INICIADA -------");
+        await lastValueFrom(this.matchService.start());
     }
 }

@@ -1,3 +1,4 @@
+import { BehaviorSubject } from "rxjs";
 import { Socket } from "socket.io";
 import Container, { Service } from "typedi";
 import { TetrisGridPiece } from "../entity/tetris-grid";
@@ -8,20 +9,26 @@ import { SocketEventHandlingMappingService } from "../mapping/socket-handler-eve
 @Service()
 export class UsersService{
     private users : Array<User> = [];
-
+    public alivePlayers = new BehaviorSubject(0);
     constructor(        
         private socketHandler : SocketEventHandlingMappingService
     ) {}
 
     addUser(userId : string,socket : Socket){
-        let user = this.users.find(user => user.userId == userId);
-        if(user){
-            user.socketId = socket.id;
+        if(userId != null){
+            let user = this.users.find(user => user.userId == userId);
+            if(user){
+                user.socketId = socket.id;
+            }
+            else{
+                this.users.push(new User(userId,socket.id));
+                console.log(`Jogador ${userId} autenticado`);
+                //this.setUserGameGrid(new Array<TetrisGridPiece>(),socket);
+                this.returnAllGrids();
+            }
         }
-        else{
-            this.users.push(new User(userId,socket.id));
-            //this.setUserGameGrid(new Array<TetrisGridPiece>(),socket);
-            this.returnAllGrids();
+        else {
+            console.error(`Jogador sem usuário tentou conectar :)`)
         }
     }
 
@@ -33,6 +40,7 @@ export class UsersService{
             console.warn("Unauthenticated player")
         } else{
             user!.playerGrid = grid;
+            console.log(`Jogador ${user.userId} atualizou a grid, tamanho da grid: ${user.playerGrid.length}`);
             Container.get(SocketEventHandlingMappingService).emitMessage(`${SocketEventServerEnumerator.CHALLENGER_GRID_UPDATE}`,user);
         }
     }

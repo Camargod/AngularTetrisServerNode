@@ -13,16 +13,16 @@ export class SocketEventHandlingMappingService{
         private userService : UsersService
     ){}
 
-    emitMessage(event:string,message : any){
-        this.socketIoServer.emit(event,message)
-        console.log(`Mensagem com id: ${event} valor: ${message}`);
+    emitMessage(event:string | SocketEventServerEnumerator,message : any){
+        this.socketIoServer.emit(`${event}`,message)
+        // console.log(`Mensagem com id: ${event} valor: ${message}`);
     }
     /*
         Emits a message to a single socket;
     */
     emitMessageToSocket(event:string | SocketEventServerEnumerator ,message : any, socket : Socket){
         socket.emit(`${event}`,message);
-        console.log(`Mensagem com id: ${event} valor: ${message}`);
+        console.log(`Mensagem com id: ${event} valor: ${message} para usuário ${socket.id}`);
     }
 
     setSocketIo(socketIo : Server){
@@ -53,6 +53,7 @@ export class SocketEventHandlingMappingService{
     setSocketListening(){
         const e = SocketEventClientEnumerator;
         const classInstance = this;
+
         this.socketIoServer!.on('connection', function (socket : Socket){
             console.log(`Player com o ID: ${socket.id} conectou`);
             let i = 0;
@@ -75,4 +76,5 @@ export class SocketEventHandlingMappingService{
         })
     }
 }
+
 
