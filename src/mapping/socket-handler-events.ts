@@ -51,29 +51,28 @@ export class SocketEventHandlingMappingService{
     }
 
     setSocketListening(){
-        const e = SocketEventClientEnumerator;
-        const classInstance = this;
-
+        let initializeContext = this.socketInitializer.bind(this);
         this.socketIoServer!.on('connection', function (socket : Socket){
-            console.log(`Player com o ID: ${socket.id} conectou`);
-            let i = 0;
-            for(const eIt in e){
-                if(classInstance.validateString(eIt)){
-                    classInstance.clientMethodMapping.set(eIt,classInstance.clientMethodListing[i]);
-                    console.log(`Evento de id ${eIt} mapeado`);
-                    socket.on(eIt,(value)=>{
-                        classInstance.clientMethodMapping.get(eIt)!(value,socket,classInstance);
-                    })
-                    i++;
-                }
-            }
+            initializeContext(socket);
         })
     }
 
-    validateClientConnection(){
-        this.socketIoServer.on("connection", (socket)=>{
-            this.emitMessageToSocket(SocketEventServerEnumerator.CONNECTION_READY,"",socket);
-        })
+    socketInitializer(socket : Socket){
+        const e = SocketEventClientEnumerator;
+        console.log(`Player com o ID: ${socket.id} conectou`);
+        let i = 0;
+        for(const eIt in e){
+            if(this.validateString(eIt)){
+                this.clientMethodMapping.set(eIt,this.clientMethodListing[i]);
+                console.log(`Evento de id ${eIt} mapeado`);
+                socket.on(eIt,(value)=>{
+                    console.log(eIt + " Chamado")
+                    this.clientMethodMapping.get(eIt)!(value,socket,this);
+                })
+                i++;
+            }
+        }
+        this.emitMessageToSocket(SocketEventServerEnumerator.CONNECTION_READY,"",socket);
     }
 }
 

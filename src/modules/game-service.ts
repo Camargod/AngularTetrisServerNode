@@ -23,7 +23,6 @@ export class GameService {
     async gameStart(){
         console.log("----- SERVIDOR INICIADO -------")
         this.socketEvents.setSocketListening();
-        this.socketEvents.validateClientConnection();
         console.log("----- ROTINA DE TIMER INICIADA -------");
         await lastValueFrom(this.timerService.start());
         console.log("----- ROTINA DE PARTIDA INICIADA -------");
