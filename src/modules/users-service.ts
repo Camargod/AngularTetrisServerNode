@@ -5,6 +5,7 @@ import { TetrisGridPiece } from "../entity/tetris-grid";
 import { User } from "../entity/user";
 import { SocketEventServerEnumerator } from "../enums/socket-event.enum";
 import { SocketEventHandlingMappingService } from "../mapping/socket-handler-events";
+import { TimerService } from "./timer-service";
 
 @Service()
 export class UsersService{
@@ -15,7 +16,8 @@ export class UsersService{
     ) {}
 
     addUser(userId : string,socket : Socket){
-        if(userId != null){
+        let timerService = Container.get(TimerService);
+        if(userId != null && timerService.isEnabled){
             let user = this.users.find(user => user.userId == userId);
             if(user){
                 user.socketId = socket.id;
@@ -26,10 +28,18 @@ export class UsersService{
                 //this.setUserGameGrid(new Array<TetrisGridPiece>(),socket);
                 this.returnAllGrids();
             }
+            this.alivePlayers.next(this.users.length);
         }
         else {
             console.error(`Jogador sem usuário tentou conectar :)`)
         }
+    }
+
+    userLost(userId : string,socket : Socket){
+        let user = this.users.find(user => user.socketId == socket.id);
+        if(user) user.deafeated = true;
+        let alive = this.users.filter(user => !user.deafeated);
+        this.alivePlayers.next(alive.length);
     }
 
     setUserGameGrid(grid : Array<TetrisGridPiece>, socket : Socket){

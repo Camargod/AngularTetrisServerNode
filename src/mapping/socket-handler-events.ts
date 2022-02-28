@@ -1,6 +1,7 @@
 import { Server, Socket } from "socket.io";
 import { Service } from "typedi";
 import { SocketEventClientEnumerator, SocketEventServerEnumerator } from "../enums/socket-event.enum";
+import { TimerService } from "../modules/timer-service";
 import { UsersService } from "../modules/users-service";
 
 @Service()
@@ -8,9 +9,10 @@ export class SocketEventHandlingMappingService{
 
     private socketIoServer !: Server;
     private clientMethodMapping : Map<String,Function> = new Map();
-    private clientMethodListing = [this.handleGridChanges,this.void,this.void,this.userStartSession]
+    private clientMethodListing = [this.handleGridChanges,this.void,this.playerLost,this.userStartSession]
     constructor(
-        private userService : UsersService
+        private userService : UsersService,
+        private timerService : TimerService
     ){}
 
     emitMessage(event:string | SocketEventServerEnumerator,message : any){
@@ -43,11 +45,15 @@ export class SocketEventHandlingMappingService{
     void(...args : any[]){}
 
     handleGridChanges(...args : any[]){
-        args[2].userService.setUserGameGrid(args[0],args[1]);
+        this.userService.setUserGameGrid(args[0],args[1]);
     }
 
     userStartSession(...args : any[]){
-        args[2].userService.addUser(args[0],args[1]);
+        this.userService.addUser(args[0],args[1]);
+    }
+
+    playerLost(...args : any[]){
+        this.userService.userLost(args[0],args[1]);
     }
 
     setSocketListening(){
@@ -58,21 +64,25 @@ export class SocketEventHandlingMappingService{
     }
 
     socketInitializer(socket : Socket){
-        const e = SocketEventClientEnumerator;
-        console.log(`Player com o ID: ${socket.id} conectou`);
-        let i = 0;
-        for(const eIt in e){
-            if(this.validateString(eIt)){
-                this.clientMethodMapping.set(eIt,this.clientMethodListing[i]);
-                console.log(`Evento de id ${eIt} mapeado`);
-                socket.on(eIt,(value)=>{
-                    console.log(eIt + " Chamado")
-                    this.clientMethodMapping.get(eIt)!(value,socket,this);
-                })
-                i++;
+        if(this.timerService.isEnabled.value){
+            const e = SocketEventClientEnumerator;
+            console.log(`Player com o ID: ${socket.id} conectou`);
+            let i = 0;
+            for(const eIt in e){
+                if(this.validateString(eIt)){
+                    this.clientMethodMapping.set(eIt,this.clientMethodListing[i]);
+                    console.log(`Evento de id ${eIt} mapeado`);
+                    socket.on(eIt,(value)=>{
+                        console.log(eIt + " Chamado")
+                        this.clientMethodMapping.get(eIt)?.bind(this)(value,socket);
+                    })
+                    i++;
+                }
             }
+            this.emitMessageToSocket(SocketEventServerEnumerator.CONNECTION_READY,"",socket);
+        } else{
+            //Todo: colocar enum de partida ja inciada e mostrar mensagem no front
         }
-        this.emitMessageToSocket(SocketEventServerEnumerator.CONNECTION_READY,"",socket);
     }
 }
 

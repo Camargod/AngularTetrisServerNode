@@ -19,12 +19,10 @@ export class MatchService {
     start() : Observable<boolean>{
         this.userService.alivePlayers.next(this.userService.getPlayersNumber());
         this._alivePlayersSubscription = this.userService.alivePlayers.subscribe((alivePlayers)=>{
-            if(alivePlayers == 1){
+            if(alivePlayers == 0){
                 this.isGameOver.next(true);
             }
         });
-
-
 
         return new Observable((obs)=>{
             this.matchLoopTimeout = setTimeout(()=>{
@@ -44,6 +42,7 @@ export class MatchService {
 
     private endMatch(observable : Subscriber<boolean>){
         clearTimeout(this.matchLoopTimeout!);
+        console.log("Game ended");
         observable.next(true);
         observable.complete();
         observable.unsubscribe();
