@@ -7,6 +7,8 @@ export enum SocketEventServerEnumerator{
     "RECEIVED_DAMAGE" = 205,
     "IN_MATCH_PLAYERS" = 206,
     "MATCH_SPEEDUP"= 207,
+    "GETTING_FOCUSED"=208,
+    "FOCUSING_PLAYERS"=209,
     "DISCONNECTED_BY_SERVER" = 299  
 }
 
@@ -14,5 +16,6 @@ export enum SocketEventClientEnumerator{
     "GRID_UPDATE" = 102,
     "PIECE_GRID_UPDATE" = 103,
     "GAME_OVER" = 104,
-    "AUTENTICATE" = 105
+    "AUTENTICATE" = 105,
+    "GET_ENEMIES_FOCUES" = 106,
 }

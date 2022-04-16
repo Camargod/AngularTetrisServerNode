@@ -3,6 +3,8 @@ import { Socket } from "socket.io";
 import Container, { Service } from "typedi";
 import { TetrisGridPiece } from "../entity/tetris-grid";
 import { User } from "../entity/user";
+import { UserTransaction } from "../entity/user-transaction";
+import focusFilter from "../enums/focus-modes";
 import { SocketEventServerEnumerator } from "../enums/socket-event.enum";
 import { SocketEventHandlingMappingService } from "../mapping/socket-handler-events";
 import { TimerService } from "./timer-service";
@@ -43,9 +45,7 @@ export class UsersService{
     }
 
     setUserGameGrid(grid : Array<TetrisGridPiece>, socket : Socket){
-        const user = this.users.find((user)=>{
-            return user.socketId == socket.id
-        });
+        const user = this.findUserBySocket(socket);
         if(!user){
             console.warn("Unauthenticated player")
         } else{
@@ -61,5 +61,38 @@ export class UsersService{
     
     getPlayersNumber(){
         return this.users.length;
+    }
+
+    getFocusByType(type : string, socket : Socket){
+        const userTransaction = this.getUserTransaction(socket);
+        let userToFocus = focusFilter(userTransaction.otherUsers,type);
+        if(userTransaction.user.focusing && userTransaction.user.focusing.socketId != userToFocus.socketId){
+            userTransaction.user.focusing.attackers.find((user,index)=>{
+                if(user.socketId == userTransaction.user.socketId){
+                    userTransaction.user.focusing?.attackers.splice(index,1);
+                }
+            })
+        }
+        userTransaction.user.focusing = userToFocus;
+        userToFocus.attackers.push(userTransaction.user);
+        Container.get(SocketEventHandlingMappingService).emitMessageToSocket(SocketEventServerEnumerator.FOCUSING_PLAYERS,userToFocus.socketId,socket);
+    }
+
+    getUserTransaction(socket : Socket) : UserTransaction{
+        const user = this.findUserBySocket(socket);
+        const otherUsers = this.getListWithoutRequestedUser(socket);
+        return {user:user!,otherUsers:otherUsers};
+    }
+
+    private findUserBySocket(socket : Socket){
+        return this.users.find((user)=>{
+            return user.socketId == socket.id
+        });
+    }
+
+    private getListWithoutRequestedUser(socket : Socket) : Array<User>{
+        return this.users.filter((user)=>{
+            return user.socketId == socket.id;
+        })
     }
 }
