@@ -12,6 +12,7 @@ import { TimerService } from "./timer-service";
 @Service()
 export class UsersService{
     private users : Array<User> = [];
+
     public alivePlayers = new BehaviorSubject(0);
     constructor(        
         private socketHandler : SocketEventHandlingMappingService
@@ -64,18 +65,21 @@ export class UsersService{
     }
 
     getFocusByType(type : string, socket : Socket){
+        const socketHandling = Container.get(SocketEventHandlingMappingService);
         const userTransaction = this.getUserTransaction(socket);
         let userToFocus = focusFilter(userTransaction.otherUsers,type);
         if(userTransaction.user.focusing && userTransaction.user.focusing.socketId != userToFocus.socketId){
-            userTransaction.user.focusing.attackers.find((user,index)=>{
+            userTransaction.user.focusing?.attackers.find((user,index)=>{
                 if(user.socketId == userTransaction.user.socketId){
                     userTransaction.user.focusing?.attackers.splice(index,1);
                 }
             })
+            userTransaction.user.focusing = undefined;
         }
         userTransaction.user.focusing = userToFocus;
         userToFocus.attackers.push(userTransaction.user);
-        Container.get(SocketEventHandlingMappingService).emitMessageToSocket(SocketEventServerEnumerator.FOCUSING_PLAYERS,userToFocus.socketId,socket);
+        socketHandling.emitMessageToSocket(SocketEventServerEnumerator.FOCUSING_PLAYERS,userToFocus.socketId,socket);
+        // socketHandling.emitMessageToSocket(SocketEventServerEnumerator.GETTING_FOCUSED,userTransaction.user.socketId,userTransaction.user.focusing.socket);
     }
 
     getUserTransaction(socket : Socket) : UserTransaction{
@@ -92,7 +96,9 @@ export class UsersService{
 
     private getListWithoutRequestedUser(socket : Socket) : Array<User>{
         return this.users.filter((user)=>{
-            return user.socketId == socket.id;
+            return user.socketId != socket.id;
         })
     }
+
+    // private getSocketBy
 }

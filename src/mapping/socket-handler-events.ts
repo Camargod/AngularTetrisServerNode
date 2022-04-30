@@ -9,7 +9,13 @@ export class SocketEventHandlingMappingService{
 
     private socketIoServer !: Server;
     private clientMethodMapping : Map<String,Function> = new Map();
-    private clientMethodListing = [this.handleGridChanges,this.void,this.playerLost,this.userStartSession]
+    private clientMethodListing = [
+        this.handleGridChanges
+        ,this.void
+        ,this.playerLost
+        ,this.userStartSession
+        ,this.queryFocus
+    ]
     constructor(
         private userService : UsersService,
         private timerService : TimerService
@@ -56,6 +62,10 @@ export class SocketEventHandlingMappingService{
         this.userService.userLost(args[0],args[1]);
     }
 
+    queryFocus(...args: any[]){
+        this.userService.getFocusByType(args[0],args[1]);
+    }
+
     setSocketListening(){
         let initializeContext = this.socketInitializer.bind(this);
         this.socketIoServer!.on('connection', function (socket : Socket){
@@ -83,6 +93,9 @@ export class SocketEventHandlingMappingService{
         } else{
             //Todo: colocar enum de partida ja inciada e mostrar mensagem no front
         }
+        socket.onAny((eventName)=>{
+            console.log("EVENTO RECEBIDO: " + eventName);
+        })
     }
 }
 

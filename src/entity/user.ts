@@ -1,3 +1,4 @@
+import { Socket } from "socket.io";
 import { TetrisGridPiece } from "./tetris-grid";
 
 export class User {

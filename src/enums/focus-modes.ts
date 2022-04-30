@@ -1,11 +1,10 @@
-import { User } from "../entity/user"
+import { User } from "../entity/user";
 
 
 function focusFilter(users : Array<User>,focusMode : string) : User{
     let availableUsers = users.filter((user)=>{
-        user.attackers.length < 4 && !user.deafeated;
+        return user.attackers.length < 4 && !user.deafeated;
     })
-
     return focusModes[focusMode](availableUsers) as User;
 }
 
@@ -14,7 +13,6 @@ const focusModes : focusInterface = {
         return focusFilterFirst(users, (userA : User, userB : User)=>{
             return userA.kos > userB.kos;
         });
-
     },
     "RANDOM": (users : Array<User>) => {
         return users[Math.ceil(Math.random() * users.length)]

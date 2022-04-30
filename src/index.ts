@@ -4,11 +4,10 @@ import {Server, Socket} from 'socket.io';
 import * as http from 'http';
 import { GameService } from './modules/game-service';
 import Container, { Service } from 'typedi';
-import { createAdapter } from '@socket.io/redis-adapter';
 import { createClient, RedisClient }  from "redis";
 import { Observable } from 'rxjs';
 import { RedisService } from './services/redis-service';
-
+import * as parser from './socket/parser/socket-parser';
 @Service()
 export class Main{
 
@@ -35,7 +34,8 @@ export class Main{
             cors: {
               origin: "*",
               methods: ["GET", "POST"]
-            }
+            },
+            parser: parser
         });
 
         // try{
