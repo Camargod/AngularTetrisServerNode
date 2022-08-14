@@ -15,6 +15,7 @@ export class SocketEventHandlingMappingService{
         ,this.playerLost
         ,this.userStartSession
         ,this.queryFocus
+        ,this.playerAttacked
     ]
     constructor(
         private userService : UsersService,
@@ -66,6 +67,10 @@ export class SocketEventHandlingMappingService{
         this.userService.getFocusByType(args[0],args[1]);
     }
 
+    playerAttacked(...args : any[]){
+        this.userService.receiveDamageEvent(args[0],args[1]);
+    }
+
     setSocketListening(){
         let initializeContext = this.socketInitializer.bind(this);
         this.socketIoServer!.on('connection', function (socket : Socket){
@@ -83,13 +88,13 @@ export class SocketEventHandlingMappingService{
                     this.clientMethodMapping.set(eIt,this.clientMethodListing[i]);
                     console.log(`Evento de id ${eIt} mapeado`);
                     socket.on(eIt,(value)=>{
-                        console.log(eIt + " Chamado")
                         this.clientMethodMapping.get(eIt)?.bind(this)(value,socket);
                     })
                     i++;
                 }
             }
             this.emitMessageToSocket(SocketEventServerEnumerator.CONNECTION_READY,"",socket);
+            this.userService.addSocketInMap(socket);
         } else{
             //Todo: colocar enum de partida ja inciada e mostrar mensagem no front
         }

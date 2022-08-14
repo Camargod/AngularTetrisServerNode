@@ -18,4 +18,5 @@ export enum SocketEventClientEnumerator{
     "GAME_OVER" = 104,
     "AUTENTICATE" = 105,
     "GET_ENEMIES_FOCUS" = 106,
+    "SEND_DAMAGE"=107
 }

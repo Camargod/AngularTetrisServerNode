@@ -12,7 +12,7 @@ import { TimerService } from "./timer-service";
 @Service()
 export class UsersService{
     private users : Array<User> = [];
-
+    private socketMap : Map<String,Socket> = new Map();
     public alivePlayers = new BehaviorSubject(0);
     constructor(        
         private socketHandler : SocketEventHandlingMappingService
@@ -88,9 +88,27 @@ export class UsersService{
         return {user:user!,otherUsers:otherUsers};
     }
 
+    receiveDamageEvent(damage : Number,socket : Socket){
+        const socketHandling = Container.get(SocketEventHandlingMappingService);
+        const user = this.findUserBySocket(socket);
+        user?.attackers.forEach((user)=>{
+            socketHandling.emitMessageToSocket(SocketEventServerEnumerator.RECEIVED_DAMAGE,damage,this.socketMap.get(user.socketId)!);
+        })
+    }
+
+    addSocketInMap(socket : Socket){
+        this.socketMap.set(socket.id,socket);
+    }
+
     private findUserBySocket(socket : Socket){
         return this.users.find((user)=>{
             return user.socketId == socket.id
+        });
+    }
+
+    private findUserBySocketId(socketId : String){
+        return this.users.find((user)=>{
+            return user.socketId == socketId
         });
     }
 
