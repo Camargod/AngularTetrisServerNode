@@ -7,7 +7,7 @@
     "resolveJsonModule": true,                           
     "allowJs": true,                                     
     "sourceMap": true,                                
-    "outDir": "pages/api/",                                   
+    "outDir": "public/pages/api/",                                   
     "esModuleInterop": true,                             
     "forceConsistentCasingInFileNames": true,            
     "strict": true,                                      
