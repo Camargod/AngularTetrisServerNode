@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx ts-node ./src/index.ts",
     "start-dev": "nodemon",
-    "build": "npx tsc"
+    "build": "npm install typescript && npx tsc"
   },
   "author": "Gabriel Silva de Camargo",
   "license": "ISC",
