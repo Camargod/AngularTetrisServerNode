@@ -68,16 +68,20 @@ export class UsersService{
         const socketHandling = Container.get(SocketEventHandlingMappingService);
         const userTransaction = this.getUserTransaction(socket);
         let userToFocus = focusFilter(userTransaction.otherUsers,type);
-        if(userTransaction.user.focusing && userTransaction.user.focusing.socketId != userToFocus.socketId){
-            userTransaction.user.focusing?.attackers.find((user,index)=>{
-                if(user.socketId == userTransaction.user.socketId){
-                    userTransaction.user.focusing?.attackers.splice(index,1);
-                }
+        if(userTransaction.user.focusing && userTransaction.user.focusing != userToFocus.socketId){
+            this.users.find((user)=>{
+                if(user.socketId == userTransaction.user.focusing){
+                    user.attackers.find((userId,index)=>{
+                        if(userId == userTransaction.user.socketId){
+                            user.attackers.splice(index,1);
+                        }
+                    })
+                } 
             })
             userTransaction.user.focusing = undefined;
         }
-        userTransaction.user.focusing = userToFocus;
-        userToFocus.attackers.push(userTransaction.user);
+        userTransaction.user.focusing = userToFocus.socketId;
+        userToFocus.attackers.push(userTransaction.user.socketId);
         socketHandling.emitMessageToSocket(SocketEventServerEnumerator.FOCUSING_PLAYERS,userToFocus.socketId,socket);
         // socketHandling.emitMessageToSocket(SocketEventServerEnumerator.GETTING_FOCUSED,userTransaction.user.socketId,userTransaction.user.focusing.socket);
     }
@@ -88,12 +92,14 @@ export class UsersService{
         return {user:user!,otherUsers:otherUsers};
     }
 
-    receiveDamageEvent(damage : Number,socket : Socket){
+    sendDamageEvent(damage : number,socket : Socket){
         const socketHandling = Container.get(SocketEventHandlingMappingService);
         const user = this.findUserBySocket(socket);
-        user?.attackers.forEach((user)=>{
-            socketHandling.emitMessageToSocket(SocketEventServerEnumerator.RECEIVED_DAMAGE,damage,this.socketMap.get(user.socketId)!);
-        })
+        if(user?.attackers.length && user.attackers.length > 0) damage *= user.attackers.length;
+        const focusing = this.socketMap.get(user?.focusing!);
+        if(focusing){
+            socketHandling.emitMessageToSocket(SocketEventServerEnumerator.RECEIVED_DAMAGE,damage,focusing);
+        }
     }
 
     addSocketInMap(socket : Socket){

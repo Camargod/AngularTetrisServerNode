@@ -9,8 +9,8 @@ export class User {
     badges : number = 0;
     kos : number = 0;
     accumulatedTrash : number = 0;
-    attackers : Array<User> = [];
-    focusing ?: User;
+    attackers : Array<String> = new Array(0);
+    focusing ?: String;
     constructor(userId : string, socketId : string){
         this.userId = userId;
         this.socketId = socketId;

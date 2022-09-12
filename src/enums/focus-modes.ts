@@ -15,7 +15,7 @@ const focusModes : focusInterface = {
         });
     },
     "RANDOM": (users : Array<User>) => {
-        return users[Math.ceil(Math.random() * users.length)]
+        return users[Math.ceil(Math.random() * users.length)- 1]
     },
     "BADGES": (users : Array<User>) => {
         return focusFilterFirst(users, (userA : User, userB : User)=>{

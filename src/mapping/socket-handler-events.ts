@@ -68,7 +68,7 @@ export class SocketEventHandlingMappingService{
     }
 
     playerAttacked(...args : any[]){
-        this.userService.receiveDamageEvent(args[0],args[1]);
+        this.userService.sendDamageEvent(args[0],args[1]);
     }
 
     setSocketListening(){
