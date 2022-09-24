@@ -99,6 +99,7 @@ export class UsersService{
         const focusing = this.socketMap.get(user?.focusing!);
         if(focusing){
             socketHandling.emitMessageToSocket(SocketEventServerEnumerator.RECEIVED_DAMAGE,damage,focusing);
+            socketHandling.emitMessageToSocket(SocketEventServerEnumerator.ATTACKED_BY,user?.socketId,focusing);
         }
     }
 
