@@ -11,11 +11,11 @@ export class SocketEventHandlingMappingService{
     private clientMethodMapping : Map<String,Function> = new Map();
     private clientMethodListing = [
         this.handleGridChanges
-        ,this.void
-        ,this.playerLost
-        ,this.userStartSession
-        ,this.queryFocus
-        ,this.playerAttacked
+        , this.void
+        , this.playerLost
+        , this.userStartSession
+        , this.queryFocus
+        , this.playerAttacked
     ]
     constructor(
         private userService : UsersService,

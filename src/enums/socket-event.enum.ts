@@ -9,9 +9,9 @@ export enum SocketEventServerEnumerator{
     "MATCH_SPEEDUP"= 207,
     "GETTING_FOCUSED"=208,
     "FOCUSING_PLAYERS"=209,
-    //Sends the id of who attacked for visual efect
     "ATTACKED_BY"=210,
-    "DISCONNECTED_BY_SERVER" = 299  
+    "RECEIVE_PIECES_QUEUE"=211,
+    "DISCONNECTED_BY_SERVER"=299  
 }
 
 export enum SocketEventClientEnumerator{
