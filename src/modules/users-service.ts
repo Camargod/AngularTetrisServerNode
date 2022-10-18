@@ -95,7 +95,7 @@ export class UsersService{
     sendDamageEvent(damage : number,socket : Socket){
         const socketHandling = Container.get(SocketEventHandlingMappingService);
         const user = this.findUserBySocket(socket);
-        if(user?.attackers.length && user.attackers.length > 0) damage *= user.attackers.length;
+        // if(user?.attackers.length && user.attackers.length > 0) damage *= user.attackers.length;
         const focusing = this.socketMap.get(user?.focusing!);
         if(focusing){
             socketHandling.emitMessageToSocket(SocketEventServerEnumerator.RECEIVED_DAMAGE,damage,focusing);
