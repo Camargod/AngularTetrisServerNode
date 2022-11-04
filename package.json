@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start-pm2": "pm2 install typescript && pm2 start src/index.ts",
     "start": "npx ts-node ./src/index.ts",
     "start-dev": "nodemon",
     "build": "npm install typescript && npx tsc"
@@ -11,7 +12,7 @@
   "author": "Gabriel Silva de Camargo",
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^2.0.13"
+    "nodemon": "^2.0.20"
   },
   "dependencies": {
     "@socket.io/redis-adapter": "^7.0.0",
@@ -19,6 +20,7 @@
     "@types/redis": "^2.8.32",
     "@types/socket.io": "^3.0.2",
     "express": "^4.17.1",
+    "forever": "^4.0.3",
     "redis": "^3.1.2",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.3.1",

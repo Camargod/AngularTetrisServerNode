@@ -28,5 +28,6 @@ export class GameService {
         console.log("----- ROTINA DE PARTIDA INICIADA -------");
         await lastValueFrom(this.matchService.start());
         this.gameEnded.next(true);
+        process.exit(0);
     }
 }

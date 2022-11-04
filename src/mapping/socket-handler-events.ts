@@ -23,7 +23,7 @@ export class SocketEventHandlingMappingService{
     ){}
 
     emitMessage(event:string | SocketEventServerEnumerator,message : any){
-        this.socketIoServer.emit(`${event}`,message)
+        if(this.socketIoServer) this.socketIoServer.emit(`${event}`,message)
         // console.log(`Mensagem com id: ${event} valor: ${message}`);
     }
     /*

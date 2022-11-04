@@ -1,6 +1,5 @@
 import { BehaviorSubject, Subscriber } from "rxjs";
 import { Observable } from "rxjs/internal/Observable";
-import { AnonymousSubject } from "rxjs/internal/Subject";
 import Container, { Service } from "typedi";
 import { ServerConsts } from "../const/server-const";
 import { SocketEventServerEnumerator } from "../enums/socket-event.enum";
