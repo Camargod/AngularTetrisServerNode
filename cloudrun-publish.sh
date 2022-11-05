@@ -1,0 +1,2 @@
+docker build -t southamerica-east1-docker.pkg.dev/tetrisverse/tetrisverse-server/app:1.0.0 ./ --platform linux/amd64 &
+docker push southamerica-east1-docker.pkg.dev/tetrisverse/tetrisverse-server/app:1.0.0
