@@ -57,5 +57,6 @@ let main = async () => {
 } 
 
 main().then(()=>{
-    console.log("Jogo finalizado")
+    console.log("Jogo finalizado");
+    process.exit(0);
 });
