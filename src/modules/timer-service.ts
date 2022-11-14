@@ -28,7 +28,7 @@ export class TimerService {
         let this1 = this;
         let socketHandler = Container.get(SocketEventHandlingMappingService);
         this.timerInterval = setInterval(()=>{
-            if(this1.userService.alivePlayers.value > 0) this1.timer--;
+            if(this1.userService.alivePlayers.value > 1) this1.timer--;
             socketHandler.emitMessage(`${timerEventEnum.TIME_UPDATE}`, this1.timer)
             socketHandler.emitMessage(`${timerEventEnum.IN_MATCH_PLAYERS}`, this1.userService.getPlayersNumber())
             if(this1.timer == 0){

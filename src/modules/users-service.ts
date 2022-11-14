@@ -1,6 +1,7 @@
 import { BehaviorSubject } from "rxjs";
 import { Socket } from "socket.io";
 import Container, { Service } from "typedi";
+import { Card } from "../entity/cards";
 import { TetrisGridPiece } from "../entity/tetris-grid";
 import { User } from "../entity/user";
 import { UserTransaction } from "../entity/user-transaction";
@@ -68,7 +69,7 @@ export class UsersService{
         const socketHandling = Container.get(SocketEventHandlingMappingService);
         const userTransaction = this.getUserTransaction(socket);
         let userToFocus = focusFilter(userTransaction.otherUsers,type);
-        if(userTransaction.user.focusing && userTransaction.user.focusing != userToFocus.socketId){
+        if(userTransaction.user && userTransaction.user.focusing && userTransaction.user.focusing != userToFocus.socketId){
             this.users.find((user)=>{
                 if(user.socketId == userTransaction.user.focusing){
                     user.attackers.find((userId,index)=>{
@@ -100,6 +101,19 @@ export class UsersService{
         if(focusing){
             socketHandling.emitMessageToSocket(SocketEventServerEnumerator.RECEIVED_DAMAGE,damage,focusing);
             socketHandling.emitMessageToSocket(SocketEventServerEnumerator.ATTACKED_BY,user?.socketId,focusing);
+        }
+    }
+
+    sendCardEvent(card: Card, socket : Socket){
+        const user = this.findUserBySocket(socket);
+        const socketHandling = Container.get(SocketEventHandlingMappingService);
+        if(user && user.attackers.length > 0){
+            user.attackers.forEach((attacker)=>{
+                let attackerSocket = this.socketMap.get(attacker);
+                if(attackerSocket){
+                    socketHandling.emitMessageToSocket(SocketEventServerEnumerator.RECEIVE_CARD_FROM_ENEMY, card, attackerSocket);
+                }
+            })
         }
     }
 

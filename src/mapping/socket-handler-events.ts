@@ -16,6 +16,7 @@ export class SocketEventHandlingMappingService{
         , this.userStartSession
         , this.queryFocus
         , this.playerAttacked
+        , this.playerSentCardToEnemy
     ]
     constructor(
         private userService : UsersService,
@@ -69,6 +70,10 @@ export class SocketEventHandlingMappingService{
 
     playerAttacked(...args : any[]){
         this.userService.sendDamageEvent(args[0],args[1]);
+    }
+
+    playerSentCardToEnemy(...args : any[]){
+        this.userService.sendCardEvent(args[0],args[1]);
     }
 
     setSocketListening(){

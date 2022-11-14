@@ -19,7 +19,7 @@ export class MatchService {
     start() : Observable<boolean>{
         this.userService.alivePlayers.next(this.userService.getPlayersNumber());
         this._alivePlayersSubscription = this.userService.alivePlayers.subscribe((alivePlayers)=>{
-            if(alivePlayers == 0){
+            if(alivePlayers == 1){
                 this.isGameOver.next(true);
             }
         });
