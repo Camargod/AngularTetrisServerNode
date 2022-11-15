@@ -11,6 +11,7 @@ export class User {
     accumulatedTrash : number = 0;
     attackers : Array<String> = new Array(0);
     focusing ?: String;
+    playedRounds : number = 0;
     constructor(userId : string, socketId : string){
         this.userId = userId;
         this.socketId = socketId;

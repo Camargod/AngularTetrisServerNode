@@ -1,13 +1,14 @@
 import { BehaviorSubject } from "rxjs";
 import { Socket } from "socket.io";
 import Container, { Service } from "typedi";
-import { Card } from "../entity/cards";
+import { Card, cards } from "../entity/cards";
 import { TetrisGridPiece } from "../entity/tetris-grid";
 import { User } from "../entity/user";
 import { UserTransaction } from "../entity/user-transaction";
 import focusFilter from "../enums/focus-modes";
 import { SocketEventServerEnumerator } from "../enums/socket-event.enum";
 import { SocketEventHandlingMappingService } from "../mapping/socket-handler-events";
+import { CardGen } from "./card-gen/card-gem.service";
 import { TimerService } from "./timer-service";
 
 @Service()
@@ -52,6 +53,10 @@ export class UsersService{
             console.warn("Unauthenticated player")
         } else{
             user!.playerGrid = grid;
+            user!.playedRounds++;
+            if(user!.playedRounds % 10 == 0){
+                Container.get(SocketEventHandlingMappingService).emitMessageToSocket(`${SocketEventServerEnumerator.GET_CARD_RETURN}`,cards[Container.get(CardGen).shuffle()[0]],socket);
+            }
             console.log(`Jogador ${user.userId} atualizou a grid, tamanho da grid: ${user.playerGrid.length}`);
             Container.get(SocketEventHandlingMappingService).emitMessage(`${SocketEventServerEnumerator.CHALLENGER_GRID_UPDATE}`,user);
         }

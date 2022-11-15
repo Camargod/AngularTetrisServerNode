@@ -14,7 +14,7 @@ export class TetrominoGen implements GeneratorBase{
 
   shuffle() : Array<number>{
     let pieces : Array<number> = [];
-    for(let i = 250; i >= 0; i--){
+    for(let limit = 250; limit >= 0; limit--){
       while(this.i){
         this.randomIndex = Math.floor(Math.random() * this.i--);
 
