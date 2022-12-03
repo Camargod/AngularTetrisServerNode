@@ -18,11 +18,14 @@ export class MatchService {
 
     start() : Observable<boolean>{
         this.userService.alivePlayers.next(this.userService.getAlivePlayers().length);
-        this._alivePlayersSubscription = this.userService.alivePlayers.subscribe((alivePlayers)=>{
-            if(alivePlayers == 1){
+
+        let subs = this.userService.winEventSent.subscribe((sent)=>{
+            if(sent){
                 this.isGameOver.next(true);
+                subs.unsubscribe();
             }
         });
+
 
         return new Observable((obs)=>{
             this.matchLoopTimeout = setTimeout(()=>{
@@ -36,7 +39,6 @@ export class MatchService {
                     overSub.unsubscribe();
                 }
             });
-            
         })
     }
 

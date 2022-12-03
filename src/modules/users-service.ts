@@ -16,6 +16,7 @@ export class UsersService{
     private users : Array<User> = [];
     private socketMap : Map<String,Socket> = new Map();
     public alivePlayers = new BehaviorSubject(0);
+    public winEventSent = new BehaviorSubject(false);
     constructor(        
         private socketHandler : SocketEventHandlingMappingService
     ) {}
@@ -45,9 +46,10 @@ export class UsersService{
         if(user) user.deafeated = true;
         let alive = this.getAlivePlayers();
         this.alivePlayers.next(alive.length);
-        Container.get(SocketEventHandlingMappingService).emitMessage(SocketEventServerEnumerator.ALIVE_PLAYERS,this.alivePlayers.next);
+        Container.get(SocketEventHandlingMappingService).emitMessage(SocketEventServerEnumerator.ALIVE_PLAYERS,this.alivePlayers.value);
         if(this.alivePlayers.value == 1){
             Container.get(SocketEventHandlingMappingService).emitMessageToSocket(SocketEventServerEnumerator.YOU_WIN, "", this.socketMap.get(alive[0].socketId)!)
+            this.winEventSent.next(true);
         }
     }
 
