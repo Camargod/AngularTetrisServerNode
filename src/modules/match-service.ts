@@ -17,7 +17,7 @@ export class MatchService {
     _alivePlayersSubscription ?: Subscription;
 
     start() : Observable<boolean>{
-        this.userService.alivePlayers.next(this.userService.getPlayersNumber());
+        this.userService.alivePlayers.next(this.userService.getAlivePlayers().length);
         this._alivePlayersSubscription = this.userService.alivePlayers.subscribe((alivePlayers)=>{
             if(alivePlayers == 1){
                 this.isGameOver.next(true);

@@ -33,6 +33,7 @@ export class TimerService {
             socketHandler.emitMessage(`${timerEventEnum.IN_MATCH_PLAYERS}`, this1.userService.getPlayersNumber())
             if(this1.timer == 0){
                 socketHandler.emitMessage(`${timerEventEnum.RECEIVE_PIECES_QUEUE}`, this1.tetrominoGen.shuffle());
+                socketHandler.emitMessage(SocketEventServerEnumerator.ALIVE_PLAYERS,this.userService.getAlivePlayers().length);
                 clearInterval(this1.timerInterval!);
                 this1.isEnabled.next(false);
                 observer.next();

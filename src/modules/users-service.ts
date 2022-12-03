@@ -43,8 +43,16 @@ export class UsersService{
     userLost(userId : string,socket : Socket){
         let user = this.users.find(user => user.socketId == socket.id);
         if(user) user.deafeated = true;
-        let alive = this.users.filter(user => !user.deafeated);
+        let alive = this.getAlivePlayers();
         this.alivePlayers.next(alive.length);
+        Container.get(SocketEventHandlingMappingService).emitMessage(SocketEventServerEnumerator.ALIVE_PLAYERS,this.alivePlayers.next);
+        if(this.alivePlayers.value == 1){
+            Container.get(SocketEventHandlingMappingService).emitMessageToSocket(SocketEventServerEnumerator.YOU_WIN, "", this.socketMap.get(alive[0].socketId)!)
+        }
+    }
+
+    getAlivePlayers(){
+        return this.users.filter(user => !user.deafeated);
     }
 
     setUserGameGrid(grid : Array<TetrisGridPiece>, socket : Socket){
